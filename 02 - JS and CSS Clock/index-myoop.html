@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS + CSS Clock</title>
+</head>
+<body>
+
+
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hand hour-hand"></div>
+        <div class="hand min-hand"></div>
+        <div class="hand second-hand"></div>
+      </div>
+    </div>
+
+
+  <style>
+    html {
+      background: #018DED url(http://unsplash.it/1500/1000?image=881&blur=50);
+      background-size: cover;
+      font-family: 'helvetica neue';
+      text-align: center;
+      font-size: 10px;
+    }
+
+    body {
+      margin: 0;
+      font-size: 2rem;
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+      align-items: center;
+    }
+
+    .clock {
+      width: 30rem;
+      height: 30rem;
+      border: 20px solid white;
+      border-radius: 50%;
+      margin: 50px auto;
+      position: relative;
+      padding: 2rem;
+      box-shadow:
+        0 0 0 4px rgba(0,0,0,0.1),
+        inset 0 0 0 3px #EFEFEF,
+        inset 0 0 10px black,
+        0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .clock-face {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform: translateY(-3px); /* account for the height of the clock hands */
+    }
+
+    .hand {
+      width: 50%;
+      height: 6px;
+      background: black;
+      position: absolute;
+      top: 50%;
+    }
+
+  </style>
+  
+  <script>
+  function Clock(objQuery){
+        this._init(objQuery)
+    }
+    Clock.prototype = {
+        _init: function(objQuery){
+          this.hands = document.querySelectorAll(objQuery.hand);
+          this.hour = document.querySelector(objQuery.hour);
+          this.minutes = document.querySelector(objQuery.minutes);
+          this.second = document.querySelector(objQuery.second);
+          this.clockFace = document.querySelector(objQuery.clockFace);
+          this.hourDeg = new Date().getHours();
+          this.minutesDeg = new Date().getMinutes();
+          this.secondDeg = new Date().getSeconds();
+          console.log(this);
+          this.show();
+          this.running();
+        },
+        show: function(){
+        
+        //初始化样式修补
+        Object.assign(this.clockFace.style,{
+            transform: 'rotate(90deg)',
+            transitionTimingFunction: 'cubic-bezier(0.1, 2.7, 0.58, 1)',
+            transition: 'all 0.5s'
+        })    
+    this.hands.forEach(item=>{
+        switch(item.classList[1]){
+            case 'hour-hand':
+            Object.assign(item.style,{
+            transformOrigin: "100% 50%",
+            transform: `rotate(${this.hourDeg * 6}deg)`,        
+            width: '30%',
+            backgroundColor: '#f00',
+            left: '20%'
+           })
+           break;
+           case 'min-hand':
+            Object.assign(item.style,{
+            transformOrigin: "100% 50%",
+            transform: `rotate(${this.minutesDeg * 6}deg)`,
+            width: '40%',
+            backgroundColor: '#0f0',
+            left: '10%'
+           })
+           break;
+           default:
+            Object.assign(item.style,{
+            transformOrigin: "100% 50%", 
+            transform: `rotate(${this.secondDeg * 6}deg)`,           
+            backgroundColor: '#00f'
+           })
+           break;
+        };
+        
+    })
+        },
+        running: function(){
+          setInterval(()=>{
+            this.second.style.transform = `rotate(${(this.secondDeg++)*6}deg)`;
+            if(this.secondDeg % 60 === 0){
+                this.minutes.style.transform = `rotate(${(this.minutesDeg++)*6}deg)`;
+            }
+            if(this.minutesDeg %60 === 0){
+                this.hour.style.transform = `rotate(${(this.hourDeg++)*6}deg)`;
+            }
+          },1000)
+        }
+    }
+    var clock = new Clock({
+      clockFace: '.clock-face',
+      hand: '.hand',
+      hour: '.hour-hand',
+      minutes: '.min-hand',
+      second: '.second-hand'
+    })
+  </script>
+</body>
+</html>
